@@ -802,6 +802,7 @@ def run_level1():
                 screen.blit(rotatedHammer, hammer.topleft)
             pygame.display.update()
             clock.tick(FPS)
+
 # Main game loop
 def main():
     global current_game_state
