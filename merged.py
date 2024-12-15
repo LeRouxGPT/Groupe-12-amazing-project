@@ -6,15 +6,16 @@ import os
 import sys
 from pygame.locals import *
 
-# Initialize Pygame Command
+# Initialize Pygame
 pygame.init()
 
-# Common settings for the both levels
+# Common settings
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("The Revenge of the Hammer Bros: Power of Vengeance")
 pygame.mouse.set_visible(False)
+
 font = pygame.font.SysFont(None, 48)
 current_dir = os.getcwd()
 TEXTCOLOR = (0, 0, 0)
@@ -29,12 +30,12 @@ DARK_GRAY = (50, 50, 50)  # Updated platform color to match the background
 # Clock for controlling frame rate
 clock = pygame.time.Clock()
 
-# Game state for the individual levels
+# Game state
 GAME_STATE_LEVEL1 = 1
 GAME_STATE_LEVEL2 = 2
 current_game_state = GAME_STATE_LEVEL1
 
-# Level 2 settings from Nico's code (commented out for brevity) - Used Chat GPT Global function to organise it 
+# Level 2 settings (from Project-Copy.py)
 def init_level2():
     global player_width, player_height, player_x, player_y, player_velocity_x, player_velocity_y
     global player_color, player_lives, gravity, jump_strength, is_jumping
@@ -73,14 +74,14 @@ def init_level2():
     platform_x = 0
     platform_y = SCREEN_HEIGHT - 100
 
-    # Enemy design settings
-    enemy_width = 60  # Increased size for the enemy
-    enemy_height = 100  # Increased size for the enemy
+    # Enemy settings
+    enemy_width = 60  # Size for the enemy
+    enemy_height = 100  # Size for the enemy
     enemy_x = 300
     enemy_y = platform_y - enemy_height
-    enemy_velocity_x = 5  # Enemy speed(maybe we will have to increase it, according to the difficulty level)
+    enemy_velocity_x = 5  # Enemy speed
     enemy_color = RED
-    enemy_lives = 30  # Start with 30 health points for level 1 - Level 2 will have 3 lives in total(It is supposed to be harder)
+    enemy_lives = 30  # Start with 30 health points for level three
 
     # Enemy jump settings
     enemy_gravity = 1
@@ -88,7 +89,7 @@ def init_level2():
     enemy_velocity_y = 0
     enemy_is_jumping = False
     jump_timer = 0  # Used to trigger enemy jumps in a sequence
-    jump_sequence = [random.randint(60, 90) for _ in range(5)]  # Random jump sequence for Mario in level 2
+    jump_sequence = [random.randint(60, 90) for _ in range(5)]  # Random jump sequence for level three
     sequence_index = 0
 
     # Hammer settings
@@ -97,218 +98,6 @@ def init_level2():
     hammer_velocity_y_initial = -15
     last_hammer_time = 0  # Track the last time a hammer was thrown
     hammer_cooldown = 0.3  # Cooldown time in seconds between throws
-
-    # Load player GIFs
-    idle_gif = pygame.image.load(os.path.join(current_dir, 'Turtle.gif'))
-    right_gif = pygame.image.load(os.path.join(current_dir, 'Turtle Right.gif'))
-    left_gif = pygame.image.load(os.path.join(current_dir, 'Turtle Left.gif'))
-    jump_gif = pygame.image.load(os.path.join(current_dir, 'Turtle jump.gif'))
-
-    # Resize player GIFs to match hitbox
-    idle_gif = pygame.transform.scale(idle_gif, (player_width, player_height))
-    right_gif = pygame.transform.scale(right_gif, (player_width, player_height))
-    left_gif = pygame.transform.scale(left_gif, (player_width, player_height))
-    jump_gif = pygame.transform.scale(jump_gif, (player_width, player_height))
-
-    # Load hammer GIF - The tool that the player will use to hit enemies
-    hammer_gif = pygame.image.load(os.path.join(current_dir, 'Hammer in the AIR.gif'))
-
-    # Load background image
-    background_img = pygame.image.load(os.path.join(current_dir, 'Background Mario Game.jpeg'))
-    background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
-
-    # Load and play music
-    pygame.mixer.music.load(os.path.join(current_dir, 'Mario Music Final Boss.mp3'))
-    pygame.mixer.music.play(-1)  # Loop the music indefinitely
-
-    # Load enemy GIFs
-    enemy_right_gif = pygame.image.load(os.path.join(current_dir, 'Mario Right.gif'))
-    enemy_left_gif = pygame.image.load(os.path.join(current_dir, 'Mario Left.gif'))
-    enemy_hurt_gif = pygame.image.load(os.path.join(current_dir, 'Mario Hurt.gif'))
-
-    # Resize enemy GIFs to match hitbox
-    enemy_right_gif = pygame.transform.scale(enemy_right_gif, (enemy_width, enemy_height))
-    enemy_left_gif = pygame.transform.scale(enemy_left_gif, (enemy_width, enemy_height))
-    enemy_hurt_gif = pygame.transform.scale(enemy_hurt_gif, (enemy_width, enemy_height))
-
-    # Player state
-    player_state = "idle"
-    # Enemy state
-    enemy_state = "right"
-    
-#Fuction to finish game
-def terminate():
-    pygame.quit()
-    sys.exit()
-
-# Function to pause the game and wait for any key press
-# Allows quitting with ESC or by closing the window
-def waitForPlayerToPressKey():
-    while True:
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                terminate()
-            if event.type == KEYDOWN:
-                if event.key == K_ESCAPE: # Pressing ESC quits.
-                    terminate()
-                return
-
-# Function for coalision - from the baddie code, with chat GPT and tabnine modifications
-def playerHasHitBaddie(playerRect, baddies):
-    # Check for collisions between the player and any enemies
-    for baddie in baddies:
-        # Use Pygame's colliderect method to detect rectangle collision
-        if playerRect.colliderect(baddie['rect']):
-            # Collision detected - remove the enemy from the game
-            baddies.remove(baddie)
-            # Immediately return True to signal a collision occurred
-            return True
-    # If we've checked all enemies without finding a collision, return False
-    return False
-
-def drawText(text, font, surface, x, y):
-    # Render the text using the specified font and color
-    textobj = font.render(text, 1, TEXTCOLOR)
-    # Get the rectangular area of the rendered text
-    textrect = textobj.get_rect()
-    # Set the top-left position of the text
-    textrect.topleft = (x, y)
-    # Draw the text onto the given surface at the specified position
-    surface.blit(textobj, textrect)
-
-def hammerHitsOpponent(hammerRect, opponentRect):
-    # Check if the hammer's rectangle collides with the opponent's rectangle
-    # Returns True if there's a collision, False otherwise
-    return hammerRect.colliderect(opponentRect)
-
-# Import all functions from both games
-def draw_button():
-    # Create a font object for the button text
-    font = pygame.font.Font(None, 23)
-    # Create a rectangle for the button
-    button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
-    # Draw the button rectangle on the screen
-    pygame.draw.rect(screen, button_color, button_rect)
-    # Render the button text
-    button_text = font.render("Skip to Next Level", True, BLACK)
-    # Get the rectangle for the text and center it on the button
-    text_rect = button_text.get_rect(center=(button_x + button_width // 2, button_y + button_height // 2))
-    # Draw the text on the screen
-    screen.blit(button_text, text_rect)
-
-def show_victory_screen():
-    # Load and play victory music
-    winMusic = pygame.mixer.Sound('Winning level transition music.mp3')
-    winMusic.play()
-    # Load and scale background image
-    background_img = pygame.image.load(os.path.join(current_dir, 'Background Mario Game.jpeg'))
-    background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
-    screen.blit(background_img, (0, 0))
-    # Create and render main congratulations text
-    font = pygame.font.Font(None, 72)
-    text = font.render("CONGRATULATIONS!", True, WHITE)
-    # Create and render subtext
-    subtext_font = pygame.font.Font(None, 36)
-    subtext = subtext_font.render("You avenged your brother!", True, WHITE)
-    # Position and display the text on screen
-    screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, SCREEN_HEIGHT // 4))
-    screen.blit(subtext, (SCREEN_WIDTH // 2 - subtext.get_width() // 2, SCREEN_HEIGHT // 2))
-    # Update the display
-    pygame.display.flip()
-    # Wait for 5 seconds - time to show the game over screen, or the victory screen
-    pygame.time.wait(5000) 
-    # Stop the victory music
-    winMusic.stop()
-
-def show_game_over_screen():
-    # Play game over sound effect
-    gameOverSound = pygame.mixer.Sound('gameover.wav')
-    gameOverSound.play()
-    # Load and display background image
-    background_img = pygame.image.load(os.path.join(current_dir, 'Background Mario Game.jpeg'))
-    background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
-    screen.blit(background_img, (0, 0))
-    # Render "GAME OVER" text
-    font = pygame.font.Font(None, 72)
-    text = font.render("GAME OVER", True, WHITE)
-    # Render "Press SPACE to Retry" text
-    retry_font = pygame.font.Font(None, 36)
-    retry_text = retry_font.render("Press SPACE to Retry", True, WHITE)
-    # Position and display text on screen
-    screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, SCREEN_HEIGHT // 4))
-    screen.blit(retry_text, (SCREEN_WIDTH // 2 - retry_text.get_width() // 2, SCREEN_HEIGHT // 2))
-    # Update display
-    pygame.display.flip()
-    # Wait for 5 seconds
-    pygame.time.wait(5000)
-    # Stop game over sound
-    gameOverSound.stop()
-    # Wait for player input
-    waiting = True
-    while waiting:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                # Restart background music and exit waiting loop
-                pygame.mixer.music.play()
-                waiting = False
-
-def is_button_clicked(mouse_pos):
-    # Check if the mouse click position is within the button's boundaries
-    # mouse_pos[0] is the x-coordinate, mouse_pos[1] is the y-coordinate
-    # Return True if the click is inside the button, False otherwise
-    return button_x <= mouse_pos[0] <= button_x + button_width and button_y <= mouse_pos[1] <= button_y + button_height
-
-def start_screen():
-    # Load and scale the background image
-    background_img = pygame.image.load(os.path.join(current_dir, 'Background Mario Game.jpeg'))
-    background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
-    screen.blit(background_img, (0, 0))
-    # Create and render the main title text
-    font = pygame.font.Font(None, 72)
-    text = font.render("LEVEL 2", True, WHITE)
-    # Set up the font for tutorial text
-    tutorial_font = pygame.font.Font(None, 36)
-    # Explain the controls to the player
-    tutorial_text = [
-        "Controls:",
-        "A/D: Move Left/Right",
-        "SPACE: Jump",
-        "W: Throw Hammer",
-        "R: Dash",
-    ]
-    # Display the main title text
-    screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, SCREEN_HEIGHT // 4))
-    # Render and display each line of the tutorial text
-    for i, line in enumerate(tutorial_text):
-        tutorial_line = tutorial_font.render(line, True, WHITE)
-        screen.blit(tutorial_line, (SCREEN_WIDTH // 2 - tutorial_line.get_width() // 2, SCREEN_HEIGHT // 2 + i * 40))
-    # Update the display to show all rendered elements
-    pygame.display.flip()
-    # Wait for the player to press space to start the game
-    waiting = True
-    while waiting:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                waiting = False
-
-def run_level2():
-    #Global command for regrouping data
-    global current_game_state, player_x, player_y, player_velocity_y, is_jumping
-    global enemy_x, enemy_y, enemy_velocity_y, enemy_is_jumping, enemy_lives, enemy_velocity_x
-    global jump_timer, sequence_index, hammers, last_hammer_time, last_dash_time
-    global player_velocity_x, player_width, player_height, platform_x, platform_y
-    global platform_width, platform_height, enemy_width, enemy_height
-    global player_lives, invincible, facing_direction, player_color, enemy_color
-    global gravity, jump_strength, enemy_gravity, enemy_jump_strength
-
-    background_img = pygame.image.load(os.path.join(current_dir, 'Background Mario Game.jpeg'))
-    background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     # Load player GIFs
     idle_gif = pygame.image.load(os.path.join(current_dir, 'Turtle.gif'))
@@ -347,8 +136,175 @@ def run_level2():
     player_state = "idle"
     # Enemy state
     enemy_state = "right"
+    
 
-    jump_cooldown = 0.4  # Cooldown time in seconds for jumping
+def terminate():
+    pygame.quit()
+    sys.exit()
+
+def waitForPlayerToPressKey():
+    while True:
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                terminate()
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE: # Pressing ESC quits.
+                    terminate()
+                return
+
+def playerHasHitBaddie(playerRect, baddies):
+    for b in baddies:
+        if playerRect.colliderect(b['rect']):
+            baddies.remove(b)
+            return True
+    return False
+
+def drawText(text, font, surface, x, y):
+    textobj = font.render(text, 1, TEXTCOLOR)
+    textrect = textobj.get_rect()
+    textrect.topleft = (x, y)
+    surface.blit(textobj, textrect)
+
+def hammerHitsOpponent(hammerRect, opponentRect):
+    return hammerRect.colliderect(opponentRect)
+
+
+# Import all functions from both games
+def draw_button():
+    font = pygame.font.Font(None, 23)
+    button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
+    pygame.draw.rect(screen, button_color, button_rect)
+    button_text = font.render("Skip to Next Level", True, BLACK)
+    text_rect = button_text.get_rect(center=(button_x + button_width // 2, button_y + button_height // 2))
+    screen.blit(button_text, text_rect)
+
+def show_victory_screen():
+    # Load background image
+    winMusic = pygame.mixer.Sound('Winning level transition music.mp3')
+    winMusic.play()
+    background_img = pygame.image.load(os.path.join(current_dir, 'Background Mario Game.jpeg'))
+    background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    screen.blit(background_img, (0, 0))
+    font = pygame.font.Font(None, 72)
+    text = font.render("CONGRATULATIONS!", True, WHITE)
+    subtext_font = pygame.font.Font(None, 36)
+    subtext = subtext_font.render("You avenged your brother!", True, WHITE)
+    screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, SCREEN_HEIGHT // 4))
+    screen.blit(subtext, (SCREEN_WIDTH // 2 - subtext.get_width() // 2, SCREEN_HEIGHT // 2))
+    pygame.display.flip()
+    pygame.time.wait(5000) 
+    winMusic.stop()
+
+def show_game_over_screen():
+    gameOverSound = pygame.mixer.Sound('gameover.wav')
+    gameOverSound.play()
+    background_img = pygame.image.load(os.path.join(current_dir, 'Background Mario Game.jpeg'))
+    background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    screen.blit(background_img, (0, 0))
+    font = pygame.font.Font(None, 72)
+    text = font.render("GAME OVER", True, WHITE)
+    retry_font = pygame.font.Font(None, 36)
+    retry_text = retry_font.render("Press SPACE to Retry", True, WHITE)
+    screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, SCREEN_HEIGHT // 4))
+    screen.blit(retry_text, (SCREEN_WIDTH // 2 - retry_text.get_width() // 2, SCREEN_HEIGHT // 2))
+    pygame.display.flip()
+    pygame.time.wait(5000)
+    gameOverSound.stop()
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                pygame.mixer.music.play()
+                waiting = False
+
+def is_button_clicked(mouse_pos):
+    return button_x <= mouse_pos[0] <= button_x + button_width and button_y <= mouse_pos[1] <= button_y + button_height
+
+def start_screen():
+    # Load background image
+    background_img = pygame.image.load(os.path.join(current_dir, 'Background Mario Game.jpeg'))
+    background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    screen.blit(background_img, (0, 0))
+    font = pygame.font.Font(None, 72)
+    text = font.render("LEVEL 2", True, WHITE)
+    tutorial_font = pygame.font.Font(None, 36)
+    tutorial_text = [
+        "Controls:",
+        "A/D: Move Left/Right",
+        "SPACE: Jump",
+        "W: Throw Hammer",
+        "R: Dash",
+    ]
+    screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, SCREEN_HEIGHT // 4))
+    for i, line in enumerate(tutorial_text):
+        tutorial_line = tutorial_font.render(line, True, WHITE)
+        screen.blit(tutorial_line, (SCREEN_WIDTH // 2 - tutorial_line.get_width() // 2, SCREEN_HEIGHT // 2 + i * 40))
+    pygame.display.flip()
+    waiting = True
+    while waiting:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                waiting = False
+   
+def run_level2():
+    global current_game_state, player_x, player_y, player_velocity_y, is_jumping
+    global enemy_x, enemy_y, enemy_velocity_y, enemy_is_jumping, enemy_lives, enemy_velocity_x
+    global jump_timer, sequence_index, hammers, last_hammer_time, last_dash_time
+    global player_velocity_x, player_width, player_height, platform_x, platform_y
+    global platform_width, platform_height, enemy_width, enemy_height
+    global player_lives, invincible, facing_direction, player_color, enemy_color
+    global gravity, jump_strength, enemy_gravity, enemy_jump_strength
+
+
+    background_img = pygame.image.load(os.path.join(current_dir, 'Background Mario Game.jpeg'))
+    background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+     # Load player GIFs
+    idle_gif = pygame.image.load(os.path.join(current_dir, 'Turtle.gif'))
+    right_gif = pygame.image.load(os.path.join(current_dir, 'Turtle Right.gif'))
+    left_gif = pygame.image.load(os.path.join(current_dir, 'Turtle Left.gif'))
+    jump_gif = pygame.image.load(os.path.join(current_dir, 'Turtle jump.gif'))
+
+    # Resize player GIFs to match hitbox
+    idle_gif = pygame.transform.scale(idle_gif, (player_width, player_height))
+    right_gif = pygame.transform.scale(right_gif, (player_width, player_height))
+    left_gif = pygame.transform.scale(left_gif, (player_width, player_height))
+    jump_gif = pygame.transform.scale(jump_gif, (player_width, player_height))
+
+    # Load hammer GIF
+    hammer_gif = pygame.image.load(os.path.join(current_dir, 'Hammer in the AIR.gif'))
+
+    # Load background image
+    background_img = pygame.image.load(os.path.join(current_dir, 'Background Mario Game.jpeg'))
+    background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+    # Load and play music
+    pygame.mixer.music.load(os.path.join(current_dir, 'Mario Music Final Boss.mp3'))
+    pygame.mixer.music.play(-1)  # Loop the music indefinitely
+
+    # Load enemy GIFs
+    enemy_right_gif = pygame.image.load(os.path.join(current_dir, 'Mario Right.gif'))
+    enemy_left_gif = pygame.image.load(os.path.join(current_dir, 'Mario Left.gif'))
+    enemy_hurt_gif = pygame.image.load(os.path.join(current_dir, 'Mario Hurt.gif'))
+
+    # Resize enemy GIFs to match hitbox
+    enemy_right_gif = pygame.transform.scale(enemy_right_gif, (enemy_width, enemy_height))
+    enemy_left_gif = pygame.transform.scale(enemy_left_gif, (enemy_width, enemy_height))
+    enemy_hurt_gif = pygame.transform.scale(enemy_hurt_gif, (enemy_width, enemy_height))
+
+    # Player state
+    player_state = "idle"
+    # Enemy state
+    enemy_state = "right"
+
+
+    jump_cooldown = 0.3  # Cooldown time in seconds for jumping
     last_jump_time = 0  # Last jump time
 
     # Additional platforms
@@ -369,8 +325,10 @@ def run_level2():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+
         # Get keys pressed
         keys = pygame.key.get_pressed()
+
         # Dash movement
         current_time = time.time()
         if keys[pygame.K_r] and current_time - last_dash_time > dash_cooldown:
@@ -379,9 +337,11 @@ def run_level2():
             elif facing_direction == "right":
                 player_x += dash_distance
             last_dash_time = current_time
+
         # Activate invincibility if 'i' is pressed
         if keys[pygame.K_i]:
             invincible = True
+
         # Horizontal movement
         if keys[pygame.K_a]:
             player_x -= player_velocity_x
@@ -393,17 +353,20 @@ def run_level2():
             player_state = "right"
         else:
             player_state = "idle"
+
         # Prevent player from going outside the screen boundaries
         if player_x < 0:
             player_x = 0
         if player_x + player_width > SCREEN_WIDTH:
             player_x = SCREEN_WIDTH - player_width
+
         # Jumping
         if keys[pygame.K_SPACE] and not is_jumping and current_time - last_jump_time > jump_cooldown:
             player_velocity_y = jump_strength
             is_jumping = True
             player_state = "jump"
             last_jump_time = current_time
+
         # Throw hammer with cooldown
         if keys[pygame.K_w] and current_time - last_hammer_time > hammer_cooldown:
             hammer = {
@@ -412,17 +375,20 @@ def run_level2():
                 "vx": hammer_velocity_x if facing_direction == "right" else -hammer_velocity_x,
                 "vy": hammer_velocity_y_initial,
                 "angle": 0  # Initialize rotation angle
-                }
+            }
             hammers.append(hammer)
             last_hammer_time = current_time
+
         # Apply gravity
         player_velocity_y += gravity
         player_y += player_velocity_y
+
         # Collision with main platform
         if player_y + player_height >= platform_y:
             player_y = platform_y - player_height
             player_velocity_y = 0
             is_jumping = False
+
         # Collision with additional platforms
         for platform in platforms:
             if (platform["x"] < player_x + player_width and
@@ -432,15 +398,18 @@ def run_level2():
                 player_y = platform["y"] - player_height
                 player_velocity_y = 0
                 is_jumping = False
+
         # Move the enemy
         enemy_x += enemy_velocity_x
         if enemy_velocity_x > 0:
             enemy_state = "right"
         else:
             enemy_state = "left"
+
         # Reverse direction if enemy reaches the edge of the platform
         if enemy_x < 0 or enemy_x + enemy_width > SCREEN_WIDTH:
             enemy_velocity_x *= -1
+
         # Trigger enemy jumps in a specific loop pattern
         jump_timer += 1
         if jump_timer >= jump_sequence[sequence_index]:
@@ -449,14 +418,17 @@ def run_level2():
                 enemy_is_jumping = True
                 jump_timer = 0
                 sequence_index = (sequence_index + 1) % len(jump_sequence)
+
         # Apply gravity to the enemy
         enemy_velocity_y += enemy_gravity
         enemy_y += enemy_velocity_y
+
         # Collision with main platform for enemy
         if enemy_y + enemy_height >= platform_y:
             enemy_y = platform_y - enemy_height
             enemy_velocity_y = 0
             enemy_is_jumping = False
+
         # Collision with additional platforms for enemy
         for platform in platforms:
             if (platform["x"] < enemy_x + enemy_width and
@@ -466,15 +438,18 @@ def run_level2():
                 enemy_y = platform["y"] - enemy_height
                 enemy_velocity_y = 0
                 enemy_is_jumping = False
+
         # Update hammers
         for hammer in hammers[:]:
             hammer["x"] += hammer["vx"]
             hammer["y"] += hammer["vy"]
             hammer["vy"] += gravity
             hammer["angle"] += 10  # Rotate hammer
+
             # Remove hammers that go off-screen
             if hammer["x"] < 0 or hammer["x"] > SCREEN_WIDTH or hammer["y"] > SCREEN_HEIGHT:
                 hammers.remove(hammer)
+
         # Check hammer collision with enemy
         for hammer in hammers[:]:
             if (enemy_x < hammer["x"] < enemy_x + enemy_width and
@@ -483,11 +458,13 @@ def run_level2():
                 hammers.remove(hammer)
                 enemy_state = "hurt"
                 break
+
         # Check for victory condition
         if enemy_lives <= 0:
             pygame.mixer.music.stop()
             show_victory_screen()
             running = False
+
         # Collision with enemy
         if not invincible and (player_x < enemy_x + enemy_width and
             player_x + player_width > enemy_x and
@@ -510,13 +487,17 @@ def run_level2():
                 player_y = SCREEN_HEIGHT - player_height - 100
                 enemy_x = 300
                 enemy_y = platform_y - enemy_height
+
         # Fill screen with background image
         screen.blit(background_img, (0, 0))
+
         # Draw the main platform
         pygame.draw.rect(screen, DARK_GRAY, (platform_x, platform_y, platform_width, platform_height))
+
         # Draw additional platforms
         for platform in platforms:
             pygame.draw.rect(screen, DARK_GRAY, (platform["x"], platform["y"], platform["width"], platform["height"]))
+
         # Draw the enemy using GIFs
         if enemy_state == "right":
             screen.blit(enemy_right_gif, (enemy_x, enemy_y))
@@ -524,9 +505,11 @@ def run_level2():
             screen.blit(enemy_left_gif, (enemy_x, enemy_y))
         elif enemy_state == "hurt":
             screen.blit(enemy_hurt_gif, (enemy_x, enemy_y))
+
         # Draw enemy life bar at the top of the screen
         pygame.draw.rect(screen, BLACK, (10, 50, SCREEN_WIDTH - 20, 20))  # Background of health bar
         pygame.draw.rect(screen, RED, (10, 50, (SCREEN_WIDTH - 20) * (enemy_lives / 30), 20))  # Health bar in red
+
         # Draw the player using GIFs
         if player_state == "idle":
             screen.blit(idle_gif, (player_x, player_y))
@@ -536,18 +519,23 @@ def run_level2():
             screen.blit(left_gif, (player_x, player_y))
         elif player_state == "jump":
             screen.blit(jump_gif, (player_x, player_y))
+
         # Draw hammers
         for hammer in hammers:
             rotated_hammer = pygame.transform.rotate(hammer_gif, hammer["angle"])
             screen.blit(rotated_hammer, (hammer["x"], hammer["y"]))
+
         # Font settings to display lives
         font = pygame.font.Font(None, 36)
         lives_text = font.render(f"Lives: {player_lives}", True, WHITE)
         screen.blit(lives_text, (10, 10))
+
         # Update the display
         pygame.display.flip()
+
         # Cap the frame rate
         clock.tick(60)  # 60 FPS
+
 
 def run_level1():
 
@@ -840,14 +828,14 @@ def run_level1():
 # Main game loop
 def main():
     global current_game_state
+    
     while True:
-        # Check the current game state and execute the appropriate level#+
         if current_game_state == GAME_STATE_LEVEL2:
-            init_level2()  # Initialize level 
-            start_screen()  # Display the start screen for level
-            run_level2()  # Run level 2
+            init_level2()
+            start_screen()
+            run_level2()
         elif current_game_state == GAME_STATE_LEVEL1:
-            run_level1()  # Run level 1
+            run_level1()
 
 if __name__ == "__main__":
     main()
