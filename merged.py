@@ -842,18 +842,17 @@ def run_level1():
             pygame.display.update()
 
             clock.tick(FPS)
-
 # Main game loop
 def main():
     global current_game_state
-    
     while True:
+        # Check the current game state and execute the appropriate level#+
         if current_game_state == GAME_STATE_LEVEL2:
-            init_level2()
-            start_screen()
-            run_level2()
+            init_level2()  # Initialize level 
+            start_screen()  # Display the start screen for level
+            run_level2()  # Run level 2
         elif current_game_state == GAME_STATE_LEVEL1:
-            run_level1()
+            run_level1()  # Run level 1
 
 if __name__ == "__main__":
     main()
