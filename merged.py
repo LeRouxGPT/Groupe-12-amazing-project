@@ -74,7 +74,6 @@ def init_level2():
     platform_x = 0
     platform_y = SCREEN_HEIGHT - 100
 
-
     # Enemy design settings
     enemy_width = 60  # Increased size for the enemy
     enemy_height = 100  # Increased size for the enemy
@@ -182,7 +181,6 @@ def hammerHitsOpponent(hammerRect, opponentRect):
     # Check if the hammer's rectangle collides with the opponent's rectangle
     # Returns True if there's a collision, False otherwise
     return hammerRect.colliderect(opponentRect)
-
 
 # Import all functions from both games
 def draw_button():
@@ -554,7 +552,7 @@ def run_level2():
 
 
 def run_level1():
-
+    # Set up the game window and set the caption.
     BACKGROUNDCOLOR = (255, 255, 255)
     PLATFORMCOLOR = (51, 103, 78)  # ForestGreen to match the new background
     FPS = 60
