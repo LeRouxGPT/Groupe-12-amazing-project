@@ -579,7 +579,6 @@ def run_level1():
     gameOverSound = pygame.mixer.Sound('gameover.wav')
     winMusic = pygame.mixer.Sound('Winning level transition music.mp3')
     pygame.mixer.music.load('Luigi Music.mp3')
-
     # Set up images.
     backgroundImage = pygame.image.load('Background Luigi Game.jpeg')
     backgroundImage = pygame.transform.scale(backgroundImage, (SCREEN_WIDTH,SCREEN_HEIGHT))
@@ -607,12 +606,10 @@ def run_level1():
     hammerRotations = []
     lastHammerTime = 0
     opponentHurtCooldown = 0
-
     # Jumping variables
     isJumping = False
     jumpStartY = 0
     onGround = True
-
     luigiLife = LUIGI_LIFE
     turtleLife = TURTLE_LIFE
     baddies = []
@@ -626,8 +623,6 @@ def run_level1():
     opponentHurtCooldown = 0
     isJumping = False
     onGround = True
-    
-
     # Show the "Start" screen.
     screen.blit(backgroundImage, (0, 0))
     drawText('Dodger', font, screen, (SCREEN_WIDTH / 2)-50, (SCREEN_HEIGHT / 2)-50)
@@ -635,21 +630,17 @@ def run_level1():
     pygame.display.update()
     waitForPlayerToPressKey()
 
-
     while True:
         moveLeft = moveRight = False
         reverseCheat = slowCheat = False
         baddieAddCounter = 0
         opponentThrowCounter = 0
         pygame.mixer.music.play(-1, 0.0)
-
         while True: # The game loop runs while the game part is playing.
             current_time = time.time()
-
             for event in pygame.event.get():
                 if event.type == QUIT:
                     terminate()
-
                 if event.type == KEYDOWN:
                     if event.key == K_z:
                         reverseCheat = True
@@ -672,7 +663,6 @@ def run_level1():
                         hammers.append(hammerRect)
                         hammerRotations.append(0)  # Add initial rotation angle
                         lastHammerTime = current_time
-
                 if event.type == KEYUP:
                     if event.key == K_z:
                         reverseCheat = False
@@ -680,12 +670,10 @@ def run_level1():
                         slowCheat = False
                     if event.key == K_ESCAPE:
                         terminate()
-
                     if event.key == K_LEFT or event.key == K_a:
                         moveLeft = False
                     if event.key == K_RIGHT or event.key == K_d:
                         moveRight = False
-
             # Handle jumping
             if isJumping:
                 if playerRect.y > jumpStartY - JUMP_HEIGHT:
@@ -697,7 +685,6 @@ def run_level1():
                     playerRect.y += GRAVITY
                 else:
                     onGround = True
-
             # Add new baddies at the top of the screen, if needed.
             opponentThrowCounter += 1
             if opponentThrowCounter >= OPPONENTTHROWRATE:
@@ -708,7 +695,6 @@ def run_level1():
                             'surface':pygame.transform.scale(baddieImage, (baddieSize, baddieSize)),
                             }
                 baddies.append(newBaddie)
-
             # Move the opponent left and right.
             if opponentHurtCooldown > 0:
                 opponentHurtCooldown -= 1
@@ -718,10 +704,8 @@ def run_level1():
                     opponentImage = opponentImageRight
                 else:
                     opponentImage = opponentImageLeft
-
                 if opponentRect.right >= SCREEN_WIDTH or opponentRect.left <= 0:
                     opponentDirection *= -1
-
             # Move the hammers.
             for i in range(len(hammers) - 1, -1, -1):
                 hammers[i].y += HAMMER_SPEED
@@ -737,13 +721,11 @@ def run_level1():
                     luigiLife -= 1
                     opponentImage = opponentImageHurt
                     opponentHurtCooldown = FPS // 2  # Hurt state lasts 0.5 seconds
-
             # Check if player is hit by baddie.
             for b in baddies[:]:
                 if playerRect.colliderect(b['rect']):
                     baddies.remove(b)
                     turtleLife -= 1
-
             # End game if Luigi's life reaches 0.
             if luigiLife <= 0:
                 pygame.mixer.music.stop()
@@ -756,7 +738,6 @@ def run_level1():
                 start_screen()
                 run_level2()
                 break
-
             # End game if Turtle's life reaches 0.
             if turtleLife <= 0:
                 drawText('GAME OVER', font, screen, (SCREEN_WIDTH / 2)-70, (SCREEN_HEIGHT / 3)+7)
@@ -764,7 +745,6 @@ def run_level1():
                 pygame.time.wait(2000)
                 pygame.mixer.music.stop()
                 gameOverSound.play()
-
                 drawText('Press SPACE to Restart Level', font, screen, (SCREEN_WIDTH / 3) - 80, (SCREEN_HEIGHT / 3) + 50)
                 drawText('Press S to Skip Level', font, screen, (SCREEN_WIDTH / 3) - 30, (SCREEN_HEIGHT / 3) + 90)
                 pygame.display.update()
@@ -786,13 +766,11 @@ def run_level1():
                 # resetGame()
                 pygame.mixer.music.play(-1, 0.0)
                 break
-
             # Move the player around.
             if moveLeft and playerRect.left > 0:
                 playerRect.move_ip(-1 * PLAYERMOVERATE, 0)
             if moveRight and playerRect.right < SCREEN_WIDTH:
                 playerRect.move_ip(PLAYERMOVERATE, 0)
-
             # Move the baddies down.
             for b in baddies:
                 if not reverseCheat and not slowCheat:
@@ -801,46 +779,34 @@ def run_level1():
                     b['rect'].move_ip(0, -5)
                 elif slowCheat:
                     b['rect'].move_ip(0, 1)
-
             # Delete baddies that have fallen past the bottom.
             for b in baddies[:]:
                 if b['rect'].top > SCREEN_HEIGHT:
                     baddies.remove(b)
-
             # Draw the game world on the window.
             screen.blit(backgroundImage, (0, 0))
-
             # Draw the platform for the opponent.
             pygame.draw.rect(screen, PLATFORMCOLOR, (0, 190, SCREEN_WIDTH, 10))
-
             # Draw the platform for the player.
             pygame.draw.rect(screen, PLATFORMCOLOR, (0, SCREEN_HEIGHT - PLATFORMHEIGHT, SCREEN_WIDTH, PLATFORMHEIGHT))
-
             # Draw Luigi's life bar.
             pygame.draw.rect(screen, (255, 0, 0), (opponentRect.x, opponentRect.top - 20, 100, 10))
             pygame.draw.rect(screen, (0, 255, 0), (opponentRect.x, opponentRect.top - 20, luigiLife * 10, 10))
-
             # Draw Turtle's life bar.
             pygame.draw.rect(screen, (255, 0, 0), (10, SCREEN_HEIGHT - PLATFORMHEIGHT - 30, 100, 10))
             pygame.draw.rect(screen, (0, 255, 0), (10, SCREEN_HEIGHT - PLATFORMHEIGHT - 30, turtleLife * 33, 10))
-
             # Draw the player's rectangle.
             screen.blit(playerImage, playerRect)
-
             # Draw the opponent.
             screen.blit(opponentImage, opponentRect)
-
             # Draw each baddie.
             for b in baddies:
                 screen.blit(b['surface'], b['rect'])
-
             # Draw each hammer with rotation.
             for i, hammer in enumerate(hammers):
                 rotatedHammer = pygame.transform.rotate(hammerImage, hammerRotations[i])
                 screen.blit(rotatedHammer, hammer.topleft)
-
             pygame.display.update()
-
             clock.tick(FPS)
 # Main game loop
 def main():
