@@ -181,50 +181,74 @@ def drawText(text, font, surface, x, y):
     surface.blit(textobj, textrect)
 
 def hammerHitsOpponent(hammerRect, opponentRect):
+    # Check if the hammer's rectangle collides with the opponent's rectangle
+    # Returns True if there's a collision, False otherwise
     return hammerRect.colliderect(opponentRect)
 
 
 # Import all functions from both games
 def draw_button():
+    # Create a font object for the button text
     font = pygame.font.Font(None, 23)
+    # Create a rectangle for the button
     button_rect = pygame.Rect(button_x, button_y, button_width, button_height)
+    # Draw the button rectangle on the screen
     pygame.draw.rect(screen, button_color, button_rect)
+    # Render the button text
     button_text = font.render("Skip to Next Level", True, BLACK)
+    # Get the rectangle for the text and center it on the button
     text_rect = button_text.get_rect(center=(button_x + button_width // 2, button_y + button_height // 2))
+    # Draw the text on the screen
     screen.blit(button_text, text_rect)
 
 def show_victory_screen():
-    # Load background image
+    # Load and play victory music
     winMusic = pygame.mixer.Sound('Winning level transition music.mp3')
     winMusic.play()
+    # Load and scale background image
     background_img = pygame.image.load(os.path.join(current_dir, 'Background Mario Game.jpeg'))
     background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
     screen.blit(background_img, (0, 0))
+    # Create and render main congratulations text
     font = pygame.font.Font(None, 72)
     text = font.render("CONGRATULATIONS!", True, WHITE)
+    # Create and render subtext
     subtext_font = pygame.font.Font(None, 36)
     subtext = subtext_font.render("You avenged your brother!", True, WHITE)
+    # Position and display the text on screen
     screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, SCREEN_HEIGHT // 4))
     screen.blit(subtext, (SCREEN_WIDTH // 2 - subtext.get_width() // 2, SCREEN_HEIGHT // 2))
+    # Update the display
     pygame.display.flip()
+    # Wait for 5 seconds - time to show the game over screen, or the victory screen
     pygame.time.wait(5000) 
+    # Stop the victory music
     winMusic.stop()
 
 def show_game_over_screen():
+    # Play game over sound effect
     gameOverSound = pygame.mixer.Sound('gameover.wav')
     gameOverSound.play()
+    # Load and display background image
     background_img = pygame.image.load(os.path.join(current_dir, 'Background Mario Game.jpeg'))
     background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
     screen.blit(background_img, (0, 0))
+    # Render "GAME OVER" text
     font = pygame.font.Font(None, 72)
     text = font.render("GAME OVER", True, WHITE)
+    # Render "Press SPACE to Retry" text
     retry_font = pygame.font.Font(None, 36)
     retry_text = retry_font.render("Press SPACE to Retry", True, WHITE)
+    # Position and display text on screen
     screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, SCREEN_HEIGHT // 4))
     screen.blit(retry_text, (SCREEN_WIDTH // 2 - retry_text.get_width() // 2, SCREEN_HEIGHT // 2))
+    # Update display
     pygame.display.flip()
+    # Wait for 5 seconds
     pygame.time.wait(5000)
+    # Stop game over sound
     gameOverSound.stop()
+    # Wait for player input
     waiting = True
     while waiting:
         for event in pygame.event.get():
@@ -232,20 +256,27 @@ def show_game_over_screen():
                 pygame.quit()
                 exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                # Restart background music and exit waiting loop
                 pygame.mixer.music.play()
                 waiting = False
 
 def is_button_clicked(mouse_pos):
+    # Check if the mouse click position is within the button's boundaries
+    # mouse_pos[0] is the x-coordinate, mouse_pos[1] is the y-coordinate
+    # Return True if the click is inside the button, False otherwise
     return button_x <= mouse_pos[0] <= button_x + button_width and button_y <= mouse_pos[1] <= button_y + button_height
 
 def start_screen():
-    # Load background image
+    # Load and scale the background image
     background_img = pygame.image.load(os.path.join(current_dir, 'Background Mario Game.jpeg'))
     background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
     screen.blit(background_img, (0, 0))
+    # Create and render the main title text
     font = pygame.font.Font(None, 72)
     text = font.render("LEVEL 2", True, WHITE)
+    # Set up the font for tutorial text
     tutorial_font = pygame.font.Font(None, 36)
+    # Explain the controls to the player
     tutorial_text = [
         "Controls:",
         "A/D: Move Left/Right",
@@ -253,11 +284,15 @@ def start_screen():
         "W: Throw Hammer",
         "R: Dash",
     ]
+    # Display the main title text
     screen.blit(text, (SCREEN_WIDTH // 2 - text.get_width() // 2, SCREEN_HEIGHT // 4))
+    # Render and display each line of the tutorial text
     for i, line in enumerate(tutorial_text):
         tutorial_line = tutorial_font.render(line, True, WHITE)
         screen.blit(tutorial_line, (SCREEN_WIDTH // 2 - tutorial_line.get_width() // 2, SCREEN_HEIGHT // 2 + i * 40))
+    # Update the display to show all rendered elements
     pygame.display.flip()
+    # Wait for the player to press space to start the game
     waiting = True
     while waiting:
         for event in pygame.event.get():
@@ -266,7 +301,7 @@ def start_screen():
                 exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 waiting = False
-   
+
 def run_level2():
     global current_game_state, player_x, player_y, player_velocity_y, is_jumping
     global enemy_x, enemy_y, enemy_velocity_y, enemy_is_jumping, enemy_lives, enemy_velocity_x
@@ -280,7 +315,8 @@ def run_level2():
     background_img = pygame.image.load(os.path.join(current_dir, 'Background Mario Game.jpeg'))
     background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
-     # Load player GIFs
+    # Load player GIFs
+
     idle_gif = pygame.image.load(os.path.join(current_dir, 'Turtle.gif'))
     right_gif = pygame.image.load(os.path.join(current_dir, 'Turtle Right.gif'))
     left_gif = pygame.image.load(os.path.join(current_dir, 'Turtle Left.gif'))
