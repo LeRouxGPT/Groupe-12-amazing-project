@@ -754,7 +754,6 @@ def run_level1():
                             init_level2()
                             start_screen()
                             run_level2()
-                    
                 pygame.time.wait(2000)  # Ensure sound finishes playing
                 gameOverSound.stop()
                 # resetGame()
