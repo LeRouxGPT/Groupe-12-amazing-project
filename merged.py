@@ -303,6 +303,7 @@ def start_screen():
                 waiting = False
 
 def run_level2():
+    #Global command for regrouping data
     global current_game_state, player_x, player_y, player_velocity_y, is_jumping
     global enemy_x, enemy_y, enemy_velocity_y, enemy_is_jumping, enemy_lives, enemy_velocity_x
     global jump_timer, sequence_index, hammers, last_hammer_time, last_dash_time
@@ -311,12 +312,10 @@ def run_level2():
     global player_lives, invincible, facing_direction, player_color, enemy_color
     global gravity, jump_strength, enemy_gravity, enemy_jump_strength
 
-
     background_img = pygame.image.load(os.path.join(current_dir, 'Background Mario Game.jpeg'))
     background_img = pygame.transform.scale(background_img, (SCREEN_WIDTH, SCREEN_HEIGHT))
 
     # Load player GIFs
-
     idle_gif = pygame.image.load(os.path.join(current_dir, 'Turtle.gif'))
     right_gif = pygame.image.load(os.path.join(current_dir, 'Turtle Right.gif'))
     left_gif = pygame.image.load(os.path.join(current_dir, 'Turtle Left.gif'))
@@ -354,8 +353,7 @@ def run_level2():
     # Enemy state
     enemy_state = "right"
 
-
-    jump_cooldown = 0.3  # Cooldown time in seconds for jumping
+    jump_cooldown = 0.4  # Cooldown time in seconds for jumping
     last_jump_time = 0  # Last jump time
 
     # Additional platforms
@@ -376,10 +374,8 @@ def run_level2():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
         # Get keys pressed
         keys = pygame.key.get_pressed()
-
         # Dash movement
         current_time = time.time()
         if keys[pygame.K_r] and current_time - last_dash_time > dash_cooldown:
@@ -388,11 +384,9 @@ def run_level2():
             elif facing_direction == "right":
                 player_x += dash_distance
             last_dash_time = current_time
-
         # Activate invincibility if 'i' is pressed
         if keys[pygame.K_i]:
             invincible = True
-
         # Horizontal movement
         if keys[pygame.K_a]:
             player_x -= player_velocity_x
@@ -404,20 +398,17 @@ def run_level2():
             player_state = "right"
         else:
             player_state = "idle"
-
         # Prevent player from going outside the screen boundaries
         if player_x < 0:
             player_x = 0
         if player_x + player_width > SCREEN_WIDTH:
             player_x = SCREEN_WIDTH - player_width
-
         # Jumping
         if keys[pygame.K_SPACE] and not is_jumping and current_time - last_jump_time > jump_cooldown:
             player_velocity_y = jump_strength
             is_jumping = True
             player_state = "jump"
             last_jump_time = current_time
-
         # Throw hammer with cooldown
         if keys[pygame.K_w] and current_time - last_hammer_time > hammer_cooldown:
             hammer = {
@@ -429,17 +420,14 @@ def run_level2():
             }
             hammers.append(hammer)
             last_hammer_time = current_time
-
         # Apply gravity
         player_velocity_y += gravity
         player_y += player_velocity_y
-
         # Collision with main platform
         if player_y + player_height >= platform_y:
             player_y = platform_y - player_height
             player_velocity_y = 0
             is_jumping = False
-
         # Collision with additional platforms
         for platform in platforms:
             if (platform["x"] < player_x + player_width and
@@ -449,18 +437,15 @@ def run_level2():
                 player_y = platform["y"] - player_height
                 player_velocity_y = 0
                 is_jumping = False
-
         # Move the enemy
         enemy_x += enemy_velocity_x
         if enemy_velocity_x > 0:
             enemy_state = "right"
         else:
             enemy_state = "left"
-
         # Reverse direction if enemy reaches the edge of the platform
         if enemy_x < 0 or enemy_x + enemy_width > SCREEN_WIDTH:
             enemy_velocity_x *= -1
-
         # Trigger enemy jumps in a specific loop pattern
         jump_timer += 1
         if jump_timer >= jump_sequence[sequence_index]:
@@ -469,17 +454,14 @@ def run_level2():
                 enemy_is_jumping = True
                 jump_timer = 0
                 sequence_index = (sequence_index + 1) % len(jump_sequence)
-
         # Apply gravity to the enemy
         enemy_velocity_y += enemy_gravity
         enemy_y += enemy_velocity_y
-
         # Collision with main platform for enemy
         if enemy_y + enemy_height >= platform_y:
             enemy_y = platform_y - enemy_height
             enemy_velocity_y = 0
             enemy_is_jumping = False
-
         # Collision with additional platforms for enemy
         for platform in platforms:
             if (platform["x"] < enemy_x + enemy_width and
@@ -489,18 +471,15 @@ def run_level2():
                 enemy_y = platform["y"] - enemy_height
                 enemy_velocity_y = 0
                 enemy_is_jumping = False
-
         # Update hammers
         for hammer in hammers[:]:
             hammer["x"] += hammer["vx"]
             hammer["y"] += hammer["vy"]
             hammer["vy"] += gravity
             hammer["angle"] += 10  # Rotate hammer
-
             # Remove hammers that go off-screen
             if hammer["x"] < 0 or hammer["x"] > SCREEN_WIDTH or hammer["y"] > SCREEN_HEIGHT:
                 hammers.remove(hammer)
-
         # Check hammer collision with enemy
         for hammer in hammers[:]:
             if (enemy_x < hammer["x"] < enemy_x + enemy_width and
@@ -509,13 +488,11 @@ def run_level2():
                 hammers.remove(hammer)
                 enemy_state = "hurt"
                 break
-
         # Check for victory condition
         if enemy_lives <= 0:
             pygame.mixer.music.stop()
             show_victory_screen()
             running = False
-
         # Collision with enemy
         if not invincible and (player_x < enemy_x + enemy_width and
             player_x + player_width > enemy_x and
@@ -538,17 +515,13 @@ def run_level2():
                 player_y = SCREEN_HEIGHT - player_height - 100
                 enemy_x = 300
                 enemy_y = platform_y - enemy_height
-
         # Fill screen with background image
         screen.blit(background_img, (0, 0))
-
         # Draw the main platform
         pygame.draw.rect(screen, DARK_GRAY, (platform_x, platform_y, platform_width, platform_height))
-
         # Draw additional platforms
         for platform in platforms:
             pygame.draw.rect(screen, DARK_GRAY, (platform["x"], platform["y"], platform["width"], platform["height"]))
-
         # Draw the enemy using GIFs
         if enemy_state == "right":
             screen.blit(enemy_right_gif, (enemy_x, enemy_y))
@@ -556,11 +529,9 @@ def run_level2():
             screen.blit(enemy_left_gif, (enemy_x, enemy_y))
         elif enemy_state == "hurt":
             screen.blit(enemy_hurt_gif, (enemy_x, enemy_y))
-
         # Draw enemy life bar at the top of the screen
         pygame.draw.rect(screen, BLACK, (10, 50, SCREEN_WIDTH - 20, 20))  # Background of health bar
         pygame.draw.rect(screen, RED, (10, 50, (SCREEN_WIDTH - 20) * (enemy_lives / 30), 20))  # Health bar in red
-
         # Draw the player using GIFs
         if player_state == "idle":
             screen.blit(idle_gif, (player_x, player_y))
@@ -570,20 +541,16 @@ def run_level2():
             screen.blit(left_gif, (player_x, player_y))
         elif player_state == "jump":
             screen.blit(jump_gif, (player_x, player_y))
-
         # Draw hammers
         for hammer in hammers:
             rotated_hammer = pygame.transform.rotate(hammer_gif, hammer["angle"])
             screen.blit(rotated_hammer, (hammer["x"], hammer["y"]))
-
         # Font settings to display lives
         font = pygame.font.Font(None, 36)
         lives_text = font.render(f"Lives: {player_lives}", True, WHITE)
         screen.blit(lives_text, (10, 10))
-
         # Update the display
         pygame.display.flip()
-
         # Cap the frame rate
         clock.tick(60)  # 60 FPS
 
