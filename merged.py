@@ -623,7 +623,6 @@ def run_level1():
     drawText('Press a key to start.', font, screen, (SCREEN_WIDTH / 3) - 25, (SCREEN_HEIGHT / 3) + 100)
     pygame.display.update()
     waitForPlayerToPressKey()
-
     while True:
         moveLeft = moveRight = False
         reverseCheat = slowCheat = False
@@ -686,8 +685,7 @@ def run_level1():
                 baddieSize = random.randint(BADDIEMINSIZE, BADDIEMAXSIZE)
                 newBaddie = {'rect': pygame.Rect(opponentRect.centerx - baddieSize // 2, opponentRect.bottom, baddieSize, baddieSize),
                             'speed': random.randint(BADDIEMINSPEED, BADDIEMAXSPEED),
-                            'surface':pygame.transform.scale(baddieImage, (baddieSize, baddieSize)),
-                            }
+                            'surface':pygame.transform.scale(baddieImage, (baddieSize, baddieSize)),}
                 baddies.append(newBaddie)
             # Move the opponent left and right.
             if opponentHurtCooldown > 0:
