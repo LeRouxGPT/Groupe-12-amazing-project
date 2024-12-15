@@ -549,7 +549,6 @@ def run_level2():
         # Cap the frame rate
         clock.tick(60)  # 60 FPS
 
-
 def run_level1():
     # Set up the game window and set the caption.
     BACKGROUNDCOLOR = (255, 255, 255)
