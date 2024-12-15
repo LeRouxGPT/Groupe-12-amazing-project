@@ -412,7 +412,7 @@ def run_level2():
                 "vx": hammer_velocity_x if facing_direction == "right" else -hammer_velocity_x,
                 "vy": hammer_velocity_y_initial,
                 "angle": 0  # Initialize rotation angle
-            }
+                }
             hammers.append(hammer)
             last_hammer_time = current_time
         # Apply gravity
