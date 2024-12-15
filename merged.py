@@ -20,14 +20,12 @@ font = pygame.font.SysFont(None, 48)
 current_dir = os.getcwd()
 TEXTCOLOR = (0, 0, 0)
 
-
 # Colors
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 BLACK = (0, 0, 0)
 DARK_GRAY = (50, 50, 50)  # Updated platform color to match the background
-
 
 # Clock for controlling frame rate
 clock = pygame.time.Clock()
