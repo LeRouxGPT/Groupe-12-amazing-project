@@ -15,7 +15,6 @@ SCREEN_HEIGHT = 600
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("The Revenge of the Hammer Bros: Power of Vengeance")
 pygame.mouse.set_visible(False)
-
 font = pygame.font.SysFont(None, 48)
 current_dir = os.getcwd()
 TEXTCOLOR = (0, 0, 0)
