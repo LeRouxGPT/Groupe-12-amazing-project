@@ -581,7 +581,7 @@ def run_level1():
     playerImageLeft = pygame.transform.scale(playerImageLeft, (50, 50))
     playerImageRight = pygame.image.load('Turtle Right.gif')
     playerImageRight = pygame.transform.scale(playerImageRight, (50, 50))
-    playerImage = playerImageRight
+    playerImage = playerImageRight3
     playerRect = playerImage.get_rect()
     baddieImage = pygame.image.load('Fireball .gif')
     baddieImage = pygame.transform.scale(baddieImage, (30, 30))
