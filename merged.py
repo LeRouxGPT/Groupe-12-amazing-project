@@ -6,10 +6,10 @@ import os
 import sys
 from pygame.locals import *
 
-# Initialize Pygame
+# Initialize Pygame Command
 pygame.init()
 
-# Common settings
+# Common settings for the both levels
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -32,12 +32,12 @@ DARK_GRAY = (50, 50, 50)  # Updated platform color to match the background
 # Clock for controlling frame rate
 clock = pygame.time.Clock()
 
-# Game state
+# Game state for the individual levels
 GAME_STATE_LEVEL1 = 1
 GAME_STATE_LEVEL2 = 2
 current_game_state = GAME_STATE_LEVEL1
 
-# Level 2 settings (from Project-Copy.py)
+# Level 2 settings from Nico's code (commented out for brevity) - Used Chat GPT Global function to organise it 
 def init_level2():
     global player_width, player_height, player_x, player_y, player_velocity_x, player_velocity_y
     global player_color, player_lives, gravity, jump_strength, is_jumping
@@ -77,14 +77,14 @@ def init_level2():
     platform_y = SCREEN_HEIGHT - 100
 
 
-    # Enemy settings
+    # Enemy design settings
     enemy_width = 60  # Increased size for the enemy
     enemy_height = 100  # Increased size for the enemy
     enemy_x = 300
     enemy_y = platform_y - enemy_height
-    enemy_velocity_x = 5  # Increase enemy speed to 5
+    enemy_velocity_x = 5  # Enemy speed(maybe we will have to increase it, according to the difficulty level)
     enemy_color = RED
-    enemy_lives = 30  # Start with 30 health points for level three
+    enemy_lives = 30  # Start with 30 health points for level 1 - Level 2 will have 3 lives in total(It is supposed to be harder)
 
     # Enemy jump settings
     enemy_gravity = 1
@@ -92,7 +92,7 @@ def init_level2():
     enemy_velocity_y = 0
     enemy_is_jumping = False
     jump_timer = 0  # Used to trigger enemy jumps in a sequence
-    jump_sequence = [random.randint(60, 90) for _ in range(5)]  # Random jump sequence for level three
+    jump_sequence = [random.randint(60, 90) for _ in range(5)]  # Random jump sequence for Mario in level 2
     sequence_index = 0
 
     # Hammer settings
@@ -114,7 +114,7 @@ def init_level2():
     left_gif = pygame.transform.scale(left_gif, (player_width, player_height))
     jump_gif = pygame.transform.scale(jump_gif, (player_width, player_height))
 
-    # Load hammer GIF
+    # Load hammer GIF - The tool that the player will use to hit enemies
     hammer_gif = pygame.image.load(os.path.join(current_dir, 'Hammer in the AIR.gif'))
 
     # Load background image
@@ -140,11 +140,13 @@ def init_level2():
     # Enemy state
     enemy_state = "right"
     
-
+#Fuction to finish game
 def terminate():
     pygame.quit()
     sys.exit()
 
+# Function to pause the game and wait for any key press
+# Allows quitting with ESC or by closing the window
 def waitForPlayerToPressKey():
     while True:
         for event in pygame.event.get():
@@ -155,17 +157,27 @@ def waitForPlayerToPressKey():
                     terminate()
                 return
 
+# Function for coalision - from the baddie code, with chat GPT and tabnine modifications
 def playerHasHitBaddie(playerRect, baddies):
-    for b in baddies:
-        if playerRect.colliderect(b['rect']):
-            baddies.remove(b)
+    # Check for collisions between the player and any enemies
+    for baddie in baddies:
+        # Use Pygame's colliderect method to detect rectangle collision
+        if playerRect.colliderect(baddie['rect']):
+            # Collision detected - remove the enemy from the game
+            baddies.remove(baddie)
+            # Immediately return True to signal a collision occurred
             return True
+    # If we've checked all enemies without finding a collision, return False
     return False
 
 def drawText(text, font, surface, x, y):
+    # Render the text using the specified font and color
     textobj = font.render(text, 1, TEXTCOLOR)
+    # Get the rectangular area of the rendered text
     textrect = textobj.get_rect()
+    # Set the top-left position of the text
     textrect.topleft = (x, y)
+    # Draw the text onto the given surface at the specified position
     surface.blit(textobj, textrect)
 
 def hammerHitsOpponent(hammerRect, opponentRect):
